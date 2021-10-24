@@ -1,0 +1,57 @@
+openapi: "2.0"
+info:
+  description: "Executes rebalancing transactions for users based on strategies"
+  version: "0.1"
+  title: "Daily Rebalancing Service"
+  contact:
+    email: "ole.sasse@gmail.com"
+host: "localhost"
+basePath: "/api"
+schemes:
+  - "http"
+paths:
+  /admin/customers:
+    put:
+      summary: "Update the customers"
+      description: "Update the list of customers by providing a file path to load the data from"
+      parameters:
+        - in: "query"
+          name: "file_path"
+          description: "Path of the file to read the customers from"
+          required: true
+          schema:
+            $ref: '#/definitions/FilePath'
+      responses:
+        200:
+          description: "Customers updated from provided file"
+        400:
+          description: "Missing file path"
+        406:
+          description: "File not found"
+      security:
+        - petstore_auth:
+            - "write:customers"
+  /admin/strategies:
+    put:
+      summary: "Update the strategies"
+      description: "Update the list of strategies by providing a file path to load the data from"
+      parameters:
+        - in: "query"
+          name: "file_path"
+          description: "Path of the file to read the stategies from"
+          required: true
+          schema:
+            $ref: '#/definitions/FilePath'
+      responses:
+        200:
+          description: "Strategies updated from provided file"
+        400:
+          description: "Missing file path"
+        406:
+          description: "File not found"
+      security:
+        - petstore_auth:
+            - "write:customers"
+definitions:
+  FilePath:
+    type: "string"
