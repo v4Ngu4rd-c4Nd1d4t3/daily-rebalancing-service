@@ -11,3 +11,10 @@ curl -X PUT -G http://localhost:8080/api/admin/strategies -d file_path=strategy.
 curl -X PUT -G http://localhost:8080/api/admin/customers -d file_path=customers.csv
 ```
 
+## What is missing to make this production ready
+
+1. Documentation
+2. Test coverage
+3. Persistence of customers pending for re-balancing
+4. Circuit breakers
+5. Better algorithm for strategy selection

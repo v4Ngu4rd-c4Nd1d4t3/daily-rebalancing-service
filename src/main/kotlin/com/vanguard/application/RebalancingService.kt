@@ -59,8 +59,8 @@ class RebalancingService(
 
     override fun pendingRebalances() = pendingRebalanances.values
 
-    override fun removeFinishedRebalancing(customerId: Int) {
-        pendingRebalanances.remove(customerId)
+    override fun removeFinishedRebalancing(customerIds: List<Int>) {
+        customerIds.forEach { customerId -> pendingRebalanances.remove(customerId) }
     }
 
     override fun computeDifference(portfolio: Portfolio, strategy: Strategy): PortfolioDiff {

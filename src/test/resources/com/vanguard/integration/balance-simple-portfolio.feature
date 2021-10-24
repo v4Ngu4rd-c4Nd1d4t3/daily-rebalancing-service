@@ -10,4 +10,4 @@ Feature: Balance portfolios
     Then Wait 15 seconds
     Then Financial Portfolio Service received trades
       | 1 | -6700 | -1200 | 7900 |
-      | 2 | -1337 | -1337 | 2674 |
+      | 2 | -936 | 2272 | -1337 |

@@ -6,40 +6,40 @@ import com.vanguard.util.classLogger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import java.util.concurrent.TimeoutException
+import reactor.core.publisher.Flux
+import java.time.Duration
 
 @Component
 class PortfolioRebalancingJob(
     private val rebalancingProvider: ReblancingProvider,
     private val financialPortofolioServiceClient: FinancialPortofolioServiceClient,
-    @Value("\${jobs.timeout}") private val jobTimeout: Int,
+    @Value("\${jobs.timeout}") private val jobTimeout: Duration,
     @Value("\${financial-protofolio-service.batch-size}") private val batchSize: Int,
 ) {
 
     @Scheduled(fixedDelayString = "\${jobs.interval-millis}")
     fun rebalance() {
-        val startTime = System.currentTimeMillis()
 
         val pendingRebalances = rebalancingProvider.pendingRebalances()
-        for (batch in pendingRebalances.asIterable().chunked(batchSize)) {
-            if (System.currentTimeMillis() - startTime > jobTimeout) {
-                throw TimeoutException("Rebalancing job timed out after $jobTimeout ms")
+
+        Flux.fromIterable(pendingRebalances.asIterable().chunked(batchSize))
+            .map { batch ->
+                val trades = financialPortofolioServiceClient
+                    .retrievePortfolios(batch)
+                    .map { (strategy, portfolio) -> rebalancingProvider.computeDifference(portfolio, strategy) }
+
+                financialPortofolioServiceClient
+                    .updatePortfolios(trades)
+                    .map { finishedTrade ->
+                        val finishedTradesFor = finishedTrade.map { it.customerId }
+
+                        LOGGER.info("Finished trades for customers with ids: $finishedTradesFor")
+
+                        rebalancingProvider.removeFinishedRebalancing(finishedTradesFor)
+                        finishedTradesFor
+                    }.block()
             }
-
-            val trades = financialPortofolioServiceClient
-                .retrievePortfolios(batch)
-                .map { (strategy, portfolio) -> rebalancingProvider.computeDifference(portfolio, strategy) }
-
-            financialPortofolioServiceClient
-                .updatePortfolios(trades)
-                .map { finishedTrade ->
-                    finishedTrade.forEach { portfolioDiff ->
-                        rebalancingProvider.removeFinishedRebalancing(portfolioDiff.customerId)
-                    }
-                }.subscribe {
-                    LOGGER.info("Rebalancing finished for ${batch.map { it.first }}")
-                }
-        }
+            .blockLast(jobTimeout)
     }
 
     companion object {
