@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono
 @Component
 class FinancialPortofolioServiceClientImpl(
     @Value("\${financial-protofolio-service.base-uri}") baseUri: String,
-    @Value("\${financial-protofolio-service.parallelism}") private val parallelism: Int,
     private val objectMapper: ObjectMapper,
 ) : FinancialPortofolioServiceClient {
 
@@ -26,7 +25,6 @@ class FinancialPortofolioServiceClientImpl(
 
     override fun retrievePortfolios(customersAndStrategies: Iterable<Pair<Customer, Strategy>>) =
         Flux.fromIterable(customersAndStrategies)
-            .parallel(parallelism)
             .flatMap { (customer, strategy) ->
                 webClient.get()
                     .uri("/customer/${customer.customerId}")
@@ -34,7 +32,6 @@ class FinancialPortofolioServiceClientImpl(
                     .bodyToFlux(Portfolio::class.java)
                     .map { portfolio -> Pair(strategy, portfolio) }
             }
-            .sequential()
 
     override fun updatePortfolios(portfolioDiffs: Flux<PortfolioDiff>): Mono<List<PortfolioDiff>> {
         return portfolioDiffs.collectList().flatMap { trades ->

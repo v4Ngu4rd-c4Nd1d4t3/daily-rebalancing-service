@@ -4,7 +4,10 @@ import com.vanguard.application.api.CustomerService
 import com.vanguard.application.api.DataSourceObserver
 import com.vanguard.application.api.ReblancingProvider
 import com.vanguard.application.api.StrategyService
-import com.vanguard.domain.*
+import com.vanguard.domain.Customer
+import com.vanguard.domain.Portfolio
+import com.vanguard.domain.PortfolioDiff
+import com.vanguard.domain.Strategy
 import com.vanguard.util.classLogger
 import org.springframework.stereotype.Component
 import java.time.LocalDate

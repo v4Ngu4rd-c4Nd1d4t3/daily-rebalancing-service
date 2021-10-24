@@ -37,7 +37,7 @@ class PortfolioRebalancingJob(
 
                         rebalancingProvider.removeFinishedRebalancing(finishedTradesFor)
                         finishedTradesFor
-                    }.block()
+                    }.subscribe()
             }
             .blockLast(jobTimeout)
     }
