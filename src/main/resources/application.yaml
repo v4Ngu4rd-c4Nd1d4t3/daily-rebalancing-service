@@ -1,0 +1,8 @@
+financial-protofolio-service:
+  base-uri: "http://localhost:8081"
+  batch-size: 10
+  parallelism: 6
+
+jobs:
+  interval-millis: 10000
+  timeout: 30000
