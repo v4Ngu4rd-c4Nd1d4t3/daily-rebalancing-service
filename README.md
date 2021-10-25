@@ -13,8 +13,9 @@ curl -X PUT -G http://localhost:8080/api/admin/customers -d file_path=customers.
 
 ## What is missing to make this production ready
 
+1. Authentication and Authorization
 1. Documentation
-2. Test coverage
-3. Persistence of customers pending for re-balancing
-4. Circuit breakers
-5. Better algorithm for strategy selection
+1. Test coverage
+1. Persistence of customers pending for re-balancing
+1. Circuit breakers
+1. Better algorithm for strategy selection
