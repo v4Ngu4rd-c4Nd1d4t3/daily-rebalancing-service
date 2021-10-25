@@ -29,6 +29,8 @@ class RebalancingService(
     }
 
     override fun updated() {
+        LOGGER.info("Data sources updated. Considering re-balancing")
+
         val customers = customerService.getCustomers()
         val strategies = strategyService.getStrategies()
 

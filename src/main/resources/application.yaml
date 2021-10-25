@@ -2,6 +2,9 @@ financial-protofolio-service:
   base-uri: "http://localhost:8081"
   batch-size: 100
 
+scheduling:
+  schedule: P1D
+
 jobs:
   interval-millis: PT1H
   timeout: PT20M
